@@ -90,12 +90,26 @@ class AhoCorasickTree:
     """
 
 
-def search(string: str, sub_string: str, case_sensitivity: bool, method: str, count: int):
+def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method: str, count: int):
     """Шаблон функции поиска"""
+
+    if not case_sensitivity:
+        string = string.lower()
+
+        if isinstance(sub_string, tuple):
+            sub_string = tuple([word.lower() for word in sub_string])
+        else:
+            sub_string = sub_string.lower()
 
     alphabet_size = 52
     trie = AhoCorasickTree(alphabet_size)
-    trie.add(sub_string)
+
+    if isinstance(sub_string, tuple):
+        for word in sub_string:
+            trie.add(word)
+    else:
+        trie.add(sub_string)
+
     vertex = trie.root
     result = []
     for index in range(len(string)):
@@ -106,12 +120,8 @@ def search(string: str, sub_string: str, case_sensitivity: bool, method: str, co
                 break
 
     if method == 'last':
-        #print(f"result = {result}")
         result = list(result[::-1])[:count]
-        #print(f"result_after = {result}")
 
     if len(result) == 0:
         return None
     return tuple(result)
-
-#print(search('aaa', 'a', False, 'last', 3))  # (2, 1, 0)
