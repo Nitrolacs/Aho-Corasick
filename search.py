@@ -111,17 +111,61 @@ def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method
         trie.add(sub_string)
 
     vertex = trie.root
-    result = []
+
+    if isinstance(sub_string, tuple):
+        result = dict()
+        for word in sub_string:
+            result[word] = None
+    else:
+        result = []
+
+    find_word = ""
+
     for index in range(len(string)):
+
         vertex = trie.get_link(vertex, string[index])
+
+        find_word += str(vertex.char_to_parent)
         if vertex.is_terminal:
-            result.append(index + 1 - len(sub_string))
+
+            if isinstance(sub_string, tuple):
+                if not result[find_word]:
+                    result[find_word] = []
+                result[find_word].append(index + 1 - len(find_word))
+            else:
+                result.append(index + 1 - len(sub_string))
+
+            find_word = ""
+
             if method == 'first' and len(result) == count:
                 break
 
     if method == 'last':
-        result = list(result[::-1])[:count]
+        if isinstance(result, dict):
+            pass
+        else:
+            result = list(result[::-1])[:count]
 
     if len(result) == 0:
         return None
-    return tuple(result)
+    if isinstance(result, dict):
+        is_value = False
+        for _, value in result.items():
+            if value is not None:
+                is_value = True
+        if not is_value:
+            return None
+
+    if isinstance(result, dict):
+        for key, item in result.items():
+            if item:
+                result[key] = tuple(item)
+        return result
+    else:
+        return tuple(result)
+
+
+#  ('ababbababa', ('aba', 'bba'), False, 'first', 4, {'aba': (0, 5, 7), 'bba': (3,)}),
+#print(search('ababbababa', ('aba', 'bba'), False, 'first', 4))
+#print(search('ababbababa', 'aba', False, 'first', 4))
+#print(search('ababbababa', 'bba', False, 'first', 4))
