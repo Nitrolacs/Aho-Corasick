@@ -262,6 +262,22 @@ def get_string() -> str:
     return string
 
 
+def get_sub_string() -> Union[str, list[str]]:
+    """Получение подстроки"""
+    sub_strings = []
+    sub_string_entered = input("Введите строки, которые нужно искать в строке (введите stop для остановки): ")
+    while sub_string_entered != "stop":
+        if sub_string_entered and sub_string_entered != " " * len(sub_string_entered):
+            sub_strings.append(sub_string_entered)
+        else:
+            print("Пустой ввод. Попробуйте снова.")
+
+        sub_string_entered = input(
+            "Введите строки, которые нужно будет искать в строке или (введите stop для остановки): ")
+
+    return sub_strings
+
+
 def menu() -> None:
     """Меню программы"""
     print("    Меню программы")
@@ -301,7 +317,8 @@ def main() -> None:
 
             if all_field is False or change == "y":
                 string = get_string()
-                lst_sub_strings = get_sub_string(sub_strings)
+                sub_strings = get_sub_string()
+                print(sub_strings)
                 case_sensitivity = get_case_sensitivity(case_sensitivity)
                 count = get_count(count)
                 method = get_method(method)
