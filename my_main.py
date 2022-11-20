@@ -11,7 +11,7 @@ def reading_file(file_name: str = "") -> Union[str, bool]:
     """Чтение строки из файла"""
     file_strings = ""
     string = ""
-
+    file_name = file_name if file_name else input("Введите имя файла(с расширением), откуда нужно считать строку: ")
     if not os.path.exists(file_name):
         print("Такого файла не существует.")
         return False
@@ -22,6 +22,9 @@ def reading_file(file_name: str = "") -> Union[str, bool]:
 
     if file_strings and file_strings != " " * len(file_strings):
         string = ''.join(file_strings.split("\n"))
+
+    print("Считано из файла: ")
+    print(string)
 
     return string
 
@@ -222,6 +225,43 @@ def parse_args() -> Union[bool, str]:
     return True
 
 
+def get_string_menu() -> None:
+    print("    Меню параметров")
+    print("1 - Ввести строку вручную;")
+    print("2 - Считать строку из файла.")
+
+
+def get_string() -> str:
+    """Получение строки"""
+    string = ""
+
+    get_string_menu()
+
+    choice = input("Введите желаемый номер команды: ")
+
+    while not string:
+        if choice == "1":
+            string = input("Введите строку, в которой будет производиться поиск подстрок: ")
+            is_valid = False
+            while not is_valid:
+                if not string.strip(" "):
+                    print("Введите нормальную строку.")
+                    string = input("Введите строку, в которой будет производиться поиск подстрок: ")
+                else:
+                    is_valid = True
+
+        elif choice == "2":
+            result = reading_file(string)
+            if result:
+                string = result
+
+        else:
+            print("Такого пункта нет")
+            choice = input("Введите желаемый номер команды: ")
+
+    return string
+
+
 def menu() -> None:
     """Меню программы"""
     print("    Меню программы")
@@ -248,6 +288,7 @@ def main() -> None:
     while command_numb != "3" and if_parse == "no_args":
         menu()  # Вызов меню
         command_numb = input(message)
+
         if command_numb == "1":  # Ввод параметров
             change = ""
             all_field = check_fields(string, sub_strings, case_sensitivity, method, count)
@@ -259,7 +300,7 @@ def main() -> None:
                     change = input("Желаете изменить параметры?(y/n) ").lower()
 
             if all_field is False or change == "y":
-                string = get_string(string)
+                string = get_string()
                 lst_sub_strings = get_sub_string(sub_strings)
                 case_sensitivity = get_case_sensitivity(case_sensitivity)
                 count = get_count(count)
