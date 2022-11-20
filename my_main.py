@@ -225,6 +225,21 @@ def parse_args() -> Union[bool, str]:
     return True
 
 
+def parameters_output(string: str, lst_sub_strings: Union[str, list[str]],
+                      case_sensitivity: bool, method: str, count: int) -> None:
+    """Печать настроек поиска"""
+    print(f"Строка для поиска: {string};")
+    print("Подстроки:")
+    if lst_sub_strings:
+        for sub_string in enumerate(lst_sub_strings):
+            print(f"\t{sub_string[1]};")
+    else:
+        print("\tПодстрок нет;")
+    print(f"Чувствительность к регистру: {case_sensitivity};")
+    print(f"Кол-во вхождений подстроки в строку: {count};")
+    print(f"Метод поиска: {method};")
+
+
 def get_string_menu() -> None:
     print("    Меню параметров")
     print("1 - Ввести строку вручную;")
@@ -273,7 +288,7 @@ def get_sub_string() -> Union[str, list[str]]:
             print("Пустой ввод. Попробуйте снова.")
 
         sub_string_entered = input(
-            "Введите строки, которые нужно будет искать в строке или (введите stop для остановки): ")
+            "Введите строки, которые нужно будет искать в строке (введите stop для остановки): ")
 
     return sub_strings
 
@@ -286,7 +301,11 @@ def get_case_sensitivity() -> bool:
         print("Введено неверное значение. Попробуйте снова.")
         choice = input("Поиск должен быть чувствителен к регистру (True) или нет (False): ")
 
-    case_sensitivity = bool(choice)
+    if choice == "True":
+        case_sensitivity = True
+    else:
+        case_sensitivity = False
+
     return case_sensitivity
 
 
@@ -317,8 +336,9 @@ def menu() -> None:
     """Меню программы"""
     print("    Меню программы")
     print("1 - Ввод параметров;")
-    print("2 - Поиск;")
-    print("3 - Выход из программы.")
+    print("2 - Просмотр введённых параметров;")
+    print("3 - Поиск;")
+    print("4 - Выход из программы.")
 
 
 def main() -> None:
@@ -331,36 +351,35 @@ def main() -> None:
 
     string, method = "", ""
     sub_strings = []
-    case_sensitivity = True
+    case_sensitivity = ""
     count = 0
 
     if_parse = parse_args()
 
-    while command_numb != "3" and if_parse == "no_args":
+    while command_numb != "4" and if_parse == "no_args":
         menu()  # Вызов меню
         command_numb = input(message)
 
         if command_numb == "1":  # Ввод параметров
-            change = ""
-            all_field = check_fields(string, sub_strings, case_sensitivity, method, count)
-            if all_field:
-                print("Имеющиеся настройки: ")
-                print_settings(string, sub_strings, case_sensitivity, method, count)
-                while change not in ("y", "n"):
-                    print("Введите корректное значение. ")
-                    change = input("Желаете изменить параметры?(y/n) ").lower()
-
-            if all_field is False or change == "y":
-                string = get_string()
-                sub_strings = get_sub_string()
-                case_sensitivity = get_case_sensitivity()
-                count = get_count()
-                method = get_method()
+            string = get_string()
+            sub_strings = get_sub_string()
+            case_sensitivity = get_case_sensitivity()
+            count = get_count()
+            method = get_method()
 
         elif command_numb == "2":
-            search_def(string, sub_strings, case_sensitivity, method, count)
+            if not string:
+                print("Параметры ещё не введены.")
+            else:
+                parameters_output(string, sub_strings, case_sensitivity, method, count)
 
         elif command_numb == "3":
+            if not string:
+                print("Параметры ещё не введены.")
+            else:
+                search_def(string, sub_strings, case_sensitivity, method, count)
+
+        elif command_numb == "4":
             print("Завершение программы...")
 
         else:
