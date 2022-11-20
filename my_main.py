@@ -1,6 +1,7 @@
 import os
 import argparse
 import search
+import random
 
 from colorama import init
 from typing import Union
@@ -53,12 +54,85 @@ def check_fields(string: str, lst_sub_strings: Union[str, list[str]],
     return True
 
 
+def colored_print_tuple(string: str, all_sub_strings: Union[str, list[str]], result: Union[None, tuple, dict]) -> None:
+    """Вывод для того случая, когда передана одна подстрока"""
+
+    output_string = ""
+    color = random.randint(31, 36)  # Берём все цвета, кроме чёрного и белого
+    coloring_indexes = []  # Индексы символов, которые мы будем раскрашивать
+
+    # Получаем индексы символов, которые мы будем раскрашивать
+    for i in result:
+        for j in range(i, i + len(all_sub_strings)):
+            coloring_indexes.append(j)
+
+    # Получаем пару (индекс, символ)
+    for letter in enumerate(string):
+        # Если символ по этому индексу необходимо раскрасить
+        if letter[0] in coloring_indexes:
+            letter = list(letter)
+
+            output_string += f"\033[{color}m {letter[1]}\033[0m".replace(' ', '')
+            continue
+
+        output_string += letter[1]
+
+    print("Найденные подстроки:")
+    print(output_string)
+    print("Набор индексов начала каждой подстроки:")
+    print(f"\033[{color}m{result}\033[0m")
+
+
+def colored_print_dict(string: str, result: Union[None, tuple, dict]) -> None:
+    """Печать нескольких подстрок"""
+    count_row = 0  # Количество строк, которое выводится
+
+    for key in result:  # Получаем ключи словаря
+
+        count_row += 1
+
+        if count_row > 10:  # Ограничение на количество выводимого текста
+            break
+
+        output_string = ""
+        color = random.randint(31, 36)  # Берём все цвета, кроме чёрного и белого
+        coloring_indexes = []  # Индексы символов, которые мы будем раскрашивать
+
+        if result[key]:  # Если подстрока найдена
+
+            # Получаем индексы символов, которые мы будем раскрашивать
+            for i in result[key]:
+                for j in range(i, i + len(key)):
+                    coloring_indexes.append(j)
+
+            # Получаем пару (индекс, символ)
+            for letter in enumerate(string):
+                if letter[0] in coloring_indexes:
+                    letter = list(letter)
+
+                    output_string += f"\033[{color}m {letter[1]}\033[0m".replace(' ', '')
+                    continue
+
+                output_string += letter[1]
+
+            print("Найденные подстроки:")
+            print(output_string)
+            print("Набор индексов начала каждой подстроки:")
+            print(f"\033[{color}m{result[key]}\033[0m")
+
+        else:
+            print("Найденные подстроки:")
+            print(string)
+            print("Найденные подстроки:")
+            print(f"\033[{color}m{result[key]}\033[0m")
+
+
 def colored_output(string: str, all_sub_strings: Union[str, list[str]], result: Union[None, tuple, dict]) -> None:
     """Красивый вывод строк"""
     if isinstance(result, tuple):
-        print_tuple(string, all_sub_strings, result)
+        colored_print_tuple(string, all_sub_strings, result)
     else:
-        print_dict(string, result)
+        colored_print_dict(string, result)
 
 
 def search_substring_in_string(string: str, sub_strings: Union[str, list[str]],
@@ -127,7 +201,7 @@ def parse_args() -> Union[bool, str]:
         if not string:
             return False
 
-    sub_strings = args.sub_string.split(",")
+    sub_strings = args.sub_string.replace(" ", "").split(",")
 
     case_sensitivity = None
 

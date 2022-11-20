@@ -110,6 +110,9 @@ def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method
     find_word = ""
 
     for index in range(len(string)):
+        if string[index] == " ":
+            find_word = ""
+            continue
 
         vertex = trie.get_link(vertex, string[index])
 
