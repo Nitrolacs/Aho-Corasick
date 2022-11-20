@@ -278,6 +278,29 @@ def get_sub_string() -> Union[str, list[str]]:
     return sub_strings
 
 
+def get_case_sensitivity() -> bool:
+    """Получение параметра чувствительности к регистру"""
+
+    choice = input("Поиск должен быть чувствителен к регистру (True) или нет (False): ")
+    while choice not in ["True", "False"]:
+        print("Введено неверное значение. Попробуйте снова.")
+        choice = input("Поиск должен быть чувствителен к регистру (True) или нет (False): ")
+
+    case_sensitivity = bool(choice)
+    return case_sensitivity
+
+
+def get_count() -> int:
+    """Получение параметра количества совпадений, которые нужно найти"""
+    choice = input("Введите количество совпадений, которые нужно найти: ")
+    while not choice.isnumeric() or int(choice) <= 0:
+        print("Введено неверное значение. Попробуйте снова.")
+        choice = input("Введите количество совпадений, которые нужно найти: ")
+
+    count = int(choice)
+    return count
+
+
 def menu() -> None:
     """Меню программы"""
     print("    Меню программы")
@@ -318,9 +341,8 @@ def main() -> None:
             if all_field is False or change == "y":
                 string = get_string()
                 sub_strings = get_sub_string()
-                print(sub_strings)
-                case_sensitivity = get_case_sensitivity(case_sensitivity)
-                count = get_count(count)
+                case_sensitivity = get_case_sensitivity()
+                count = get_count()
                 method = get_method(method)
 
         elif command_numb == "2":
