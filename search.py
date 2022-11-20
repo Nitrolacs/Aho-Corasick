@@ -77,18 +77,6 @@ class AhoCorasickTree:
 
         return vertex.go[char_index]
 
-    """
-    def find(self, string):
-        # Функция нахождения в боре
-        vertex = self.root
-        for index in range(len(string)):
-            if vertex.son[char_num(string[index])] is None:
-                # Если символа нет, значит такой строки в боре нет
-                return False
-            vertex = vertex.son[char_num(string[index])]
-        return vertex.is_terminal
-    """
-
 
 def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method: str, count: int):
     """Шаблон функции поиска"""
@@ -166,6 +154,5 @@ def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method
 
 
 #  ('ababbababa', ('aba', 'bba'), False, 'first', 4, {'aba': (0, 5, 7), 'bba': (3,)}),
-#print(search('ababbababa', ('aba', 'bba'), False, 'first', 4))
-#print(search('ababbababa', 'aba', False, 'first', 4))
-#print(search('ababbababa', 'bba', False, 'first', 4))
+# print(search('ababbababababa', 'aba', False, 'first', 4))
+
