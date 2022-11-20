@@ -301,6 +301,18 @@ def get_count() -> int:
     return count
 
 
+def get_method() -> str:
+    """Получение параметра метода поиска"""
+    choice = input("Поиск должен быть с начала (first) или с конца (last): ")
+
+    while choice not in ["first", "last"]:
+        print("Введено неверное значение. Попробуйте снова.")
+        choice = input("Поиск должен быть с начала (first) или с конца (last): ")
+
+    method = choice
+    return method
+
+
 def menu() -> None:
     """Меню программы"""
     print("    Меню программы")
@@ -343,7 +355,7 @@ def main() -> None:
                 sub_strings = get_sub_string()
                 case_sensitivity = get_case_sensitivity()
                 count = get_count()
-                method = get_method(method)
+                method = get_method()
 
         elif command_numb == "2":
             search_def(string, sub_strings, case_sensitivity, method, count)
