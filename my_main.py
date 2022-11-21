@@ -123,13 +123,13 @@ def colored_print_dict(string: str, result: Union[None, tuple, dict]) -> None:
             print("Найденные подстроки:")
             print(output_string)
             print("Набор индексов начала каждой подстроки:")
-            print(f"\033[{color}m{result[key]}\033[0m")
+            print(f"\033[{color}m{key}: {result[key]}\033[0m")
 
         else:
             print("Найденные подстроки:")
             print(string)
             print("Найденные подстроки:")
-            print(f"\033[{color}m{result[key]}\033[0m")
+            print(f"\033[{color}m{key}: {result[key]}\033[0m")
 
 
 def colored_output(string: str, all_sub_strings: Union[str, list[str]], result: Union[None, tuple, dict]) -> None:
@@ -331,6 +331,16 @@ def get_method() -> str:
     return method
 
 
+def start_search(string: str, sub_strings: Union[str, list[str]],
+                 case_sensitivity: bool, method: str, count: int) -> None:
+    """Вызов поиска"""
+    item = sub_strings[0] if len(sub_strings) == 1 else tuple(sub_strings)
+    return_data = search.search(string, item, case_sensitivity, method, count)
+    if not return_data:
+        print("Данной подстроки нет в строке")
+    colored_output(string, item, return_data)
+
+
 def menu() -> None:
     """Меню программы"""
     print("    Меню программы")
@@ -376,7 +386,7 @@ def main() -> None:
             if not string:
                 print("Параметры ещё не введены.")
             else:
-                search_def(string, sub_strings, case_sensitivity, method, count)
+                search_substring_in_string(string, sub_strings, case_sensitivity, method, count)
 
         elif command_numb == "4":
             print("Завершение программы...")
