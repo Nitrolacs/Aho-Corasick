@@ -266,6 +266,9 @@ def get_string() -> str:
 
         elif choice == "2":
             result = reading_file(string)
+            while not pattern.match(result):
+                print("Недопустимый ввод. Попробуйте снова.")
+                result = reading_file(string)
             if result:
                 string = result
 
