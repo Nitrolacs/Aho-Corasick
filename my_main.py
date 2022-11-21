@@ -2,6 +2,7 @@ import os
 import argparse
 import search
 import random
+import re
 
 from colorama import init
 from typing import Union
@@ -247,7 +248,7 @@ def get_string_menu() -> None:
 def get_string() -> str:
     """Получение строки"""
     string = ""
-
+    pattern = re.compile("^[a-zA-Z]+$")
     get_string_menu()
 
     choice = input("Введите желаемый номер команды: ")
@@ -257,7 +258,7 @@ def get_string() -> str:
             string = input("Введите строку, в которой будет производиться поиск подстрок: ")
             is_valid = False
             while not is_valid:
-                if not string.strip(" "):
+                if not string.strip(" ") or not pattern.match(string):
                     print("Введите нормальную строку.")
                     string = input("Введите строку, в которой будет производиться поиск подстрок: ")
                 else:
