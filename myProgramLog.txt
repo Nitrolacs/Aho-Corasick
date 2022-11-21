@@ -1,0 +1,2 @@
+ 2022-11-21 21:06:38,864 - DEBUG - 'search_substring_in_string' ('ababbaaba', ['aba', 'bba'], None, 'first', 4) '0.0004' sec
+ 2022-11-21 22:52:00,063 - DEBUG - 'search' ('ababbaaba', ('aba', 'bba'), False, 'first', 4) '0.0000' sec

@@ -1,5 +1,27 @@
 """Шаблон модуля search"""
 
+import time
+
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    filename='myProgramLog.txt',
+    format=' %(asctime)s - %(levelname)s - %(message)s')
+
+
+def timeit(method):
+    def timed(*args):
+        ts = time.perf_counter()
+        result = method(*args)
+        te = time.perf_counter()
+        running_time = f"{te - ts:0.4f}"
+
+        logging.debug('%r %r %r sec' % (method.__name__, args, running_time))
+        return result
+
+    return timed
+
 
 def char_num(char) -> int:
     # Возвращает номер символа в латинском алфавите
@@ -78,6 +100,7 @@ class AhoCorasickTree:
         return vertex.go[char_index]
 
 
+@timeit
 def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method: str, count: int):
     """Шаблон функции поиска"""
 
@@ -117,6 +140,7 @@ def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method
         vertex = trie.get_link(vertex, string[index])
 
         find_word += str(vertex.char_to_parent)
+
         if vertex.is_terminal:
 
             if isinstance(sub_string, tuple):
@@ -157,5 +181,4 @@ def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method
 
 
 #  ('ababbababa', ('aba', 'bba'), False, 'first', 4, {'aba': (0, 5, 7), 'bba': (3,)}),
-# print(search('ababbababababa', 'aba', False, 'first', 4))
-
+print(search('ababbaaba', ('aba', 'bba'), False, 'first', 4))

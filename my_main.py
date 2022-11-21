@@ -3,31 +3,9 @@ import argparse
 import search
 import random
 import re
-import time
 
 from colorama import init
 from typing import Union
-
-import logging
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename='myProgramLog.txt',
-    format=' %(asctime)s - %(levelname)s - %(message)s')
-
-
-def timeit(method):
-
-    def timed(*args):
-        ts = time.perf_counter()
-        result = method(*args)
-        te = time.perf_counter()
-        running_time = f"{te - ts:0.4f}"
-
-        logging.debug('%r %r %r sec' % (method.__name__, args, running_time))
-        return result
-
-    return timed
 
 
 def reading_file(file_name: str = "") -> Union[str, bool]:
@@ -163,7 +141,6 @@ def colored_output(string: str, all_sub_strings: Union[str, list[str]], result: 
         colored_print_dict(string, result)
 
 
-@timeit
 def search_substring_in_string(string: str, sub_strings: Union[str, list[str]],
                                case_sensitivity: bool, method: str, count: int) -> None:
     """Вызов функции поиска из модуля"""
