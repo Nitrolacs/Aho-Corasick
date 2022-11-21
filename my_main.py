@@ -281,14 +281,16 @@ def get_string() -> str:
 
 def get_sub_string() -> Union[str, list[str]]:
     """Получение подстроки"""
+    pattern = re.compile("^[a-zA-Z]+$")
     sub_strings = []
     sub_string_entered = input("Введите строки, которые нужно искать в строке (нажмите Enter для остановки): ")
     while sub_string_entered != "" or not sub_strings:
         if sub_string_entered != "":
-            if sub_string_entered and sub_string_entered != " " * len(sub_string_entered):
+            if sub_string_entered and sub_string_entered != " " * len(sub_string_entered) and pattern.match(
+                    sub_string_entered):
                 sub_strings.append(sub_string_entered.strip(" "))
             else:
-                print("Пустой ввод. Попробуйте снова.")
+                print("Недопустимый ввод. Попробуйте снова.")
 
         sub_string_entered = input(
             "Введите строки, которые нужно искать в строке (нажмите Enter для остановки): ")
