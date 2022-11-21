@@ -11,7 +11,9 @@ def reading_file(file_name: str = "") -> Union[str, bool]:
     """Чтение строки из файла"""
     file_strings = ""
     string = ""
-    file_name = file_name if file_name else input("Введите имя файла(с расширением), откуда нужно считать строку: ")
+    if not file_name:
+        file_name = input("Введите имя файла (с расширением), откуда нужно считать строку: ")
+
     if not os.path.exists(file_name):
         print("Такого файла не существует.")
         return False
@@ -225,23 +227,19 @@ def parse_args() -> Union[bool, str]:
     return True
 
 
-def parameters_output(string: str, lst_sub_strings: Union[str, list[str]],
+def parameters_output(string: str, sub_strings: Union[str, list[str]],
                       case_sensitivity: bool, method: str, count: int) -> None:
     """Печать настроек поиска"""
-    print(f"Строка для поиска: {string};")
+    print(f"Строка: {string};")
     print("Подстроки:")
-    if lst_sub_strings:
-        for sub_string in enumerate(lst_sub_strings):
-            print(f"\t{sub_string[1]};")
-    else:
-        print("\tПодстрок нет;")
+    for sub_string in enumerate(sub_strings):
+        print(f"{sub_string[1]};")
     print(f"Чувствительность к регистру: {case_sensitivity};")
-    print(f"Кол-во вхождений подстроки в строку: {count};")
+    print(f"Количество вхождений подстроки в строку, которое нужно найти: {count};")
     print(f"Метод поиска: {method};")
 
 
 def get_string_menu() -> None:
-    print("    Меню параметров")
     print("1 - Ввести строку вручную;")
     print("2 - Считать строку из файла.")
 
@@ -280,15 +278,16 @@ def get_string() -> str:
 def get_sub_string() -> Union[str, list[str]]:
     """Получение подстроки"""
     sub_strings = []
-    sub_string_entered = input("Введите строки, которые нужно искать в строке (введите stop для остановки): ")
-    while sub_string_entered != "stop":
-        if sub_string_entered and sub_string_entered != " " * len(sub_string_entered):
-            sub_strings.append(sub_string_entered)
-        else:
-            print("Пустой ввод. Попробуйте снова.")
+    sub_string_entered = input("Введите строки, которые нужно искать в строке (нажмите Enter для остановки): ")
+    while sub_string_entered != "" or not sub_strings:
+        if sub_string_entered != "":
+            if sub_string_entered and sub_string_entered != " " * len(sub_string_entered):
+                sub_strings.append(sub_string_entered.strip(" "))
+            else:
+                print("Пустой ввод. Попробуйте снова.")
 
         sub_string_entered = input(
-            "Введите строки, которые нужно будет искать в строке (введите stop для остановки): ")
+            "Введите строки, которые нужно искать в строке (нажмите Enter для остановки): ")
 
     return sub_strings
 
