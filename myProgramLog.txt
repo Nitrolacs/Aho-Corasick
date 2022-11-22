@@ -1,2 +1,35 @@
  2022-11-21 21:06:38,864 - DEBUG - 'search_substring_in_string' ('ababbaaba', ['aba', 'bba'], None, 'first', 4) '0.0004' sec
  2022-11-21 22:52:00,063 - DEBUG - 'search' ('ababbaaba', ('aba', 'bba'), False, 'first', 4) '0.0000' sec
+ 2022-11-22 12:24:36,671 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'first', 2) '0.0000' sec
+ 2022-11-22 12:30:24,429 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'first', 2) '0.0001' sec
+ 2022-11-22 12:31:52,265 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'first', 2) '0.0001' sec
+ 2022-11-22 12:35:56,502 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'last', 2) '0.0000' sec
+ 2022-11-22 12:36:28,533 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'last', 4) '0.0001' sec
+ 2022-11-22 12:38:58,961 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'last', 4) '0.0001' sec
+ 2022-11-22 12:39:33,203 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'last', 4) '0.0001' sec
+ 2022-11-22 12:40:06,868 - DEBUG - 'search' ('ababbababa', 'aba', False, 'last', 4) '0.0000' sec
+ 2022-11-22 12:40:17,178 - DEBUG - 'search' ('ababbababa', 'aba', False, 'first', 4) '0.0000' sec
+ 2022-11-22 12:46:57,126 - DEBUG - 'search' ('', 'abc', True, 'last', 1) '0.0000' sec
+ 2022-11-22 12:48:34,028 - DEBUG - 'search' ('', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 12:48:34,028 - DEBUG - 'search' ('', 'abc', True, 'first', 1) '0.0000' sec
+ 2022-11-22 12:48:34,028 - DEBUG - 'search' ('', 'abc', False, 'last', 1) '0.0000' sec
+ 2022-11-22 12:48:34,029 - DEBUG - 'search' ('', 'abc', True, 'last', 1) '0.0000' sec
+ 2022-11-22 12:59:32,412 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:02:00,599 - DEBUG - 'search' ('a', ('abc', 'dfe'), False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:02:22,314 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:03:14,241 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:03:25,339 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:03:41,798 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:44:57,449 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:45:18,332 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:46:07,633 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:47:22,580 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:47:48,819 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:49:18,284 - DEBUG - 'search' ('a', 'abc', False, 'first', 1) '0.0000' sec
+ 2022-11-22 13:54:56,320 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'first', 3) '0.0000' sec
+ 2022-11-22 13:56:07,193 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'first', 3) '0.0000' sec
+ 2022-11-22 13:58:25,760 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'first', 3) '0.0000' sec
+ 2022-11-22 13:59:33,097 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'first', 3) '0.0000' sec
+ 2022-11-22 14:00:08,166 - DEBUG - 'search' ('ababbababa', ('aba', 'bba'), False, 'first', 3) '0.0000' sec
+ 2022-11-22 14:17:32,970 - DEBUG - 'search' ('ababbaaba', ('aba', 'bba'), True, 'first', 2) '0.0001' sec
+ 2022-11-22 14:17:43,747 - DEBUG - 'search' ('ababbaaba', ('aba', 'bba'), True, 'first', 2) '0.0001' sec

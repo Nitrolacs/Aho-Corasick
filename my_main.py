@@ -241,6 +241,7 @@ def parameters_output(string: str, sub_strings: Union[str, list[str]],
 
 
 def get_string_menu() -> None:
+    """Вывод меню для выбора ввода строки"""
     print("1 - Ввести строку вручную;")
     print("2 - Считать строку из файла.")
 
