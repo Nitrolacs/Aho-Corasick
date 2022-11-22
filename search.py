@@ -35,10 +35,10 @@ class AhoCorasickTree(object):
 
         # Инициализируем корневой узел
         self.AhoCorasickList = list()
-        self.AhoCorasickList.append({'value': '', 'next_states': [], 'fail_state': 0, 'output': []})
+        self.AhoCorasickList.append({'value': '', 'next_states': [], 'suff_link': 0, 'output': []})
 
         self.add_keywords(keywords)
-        self.set_fail_transitions()  # переходы
+        self.set_suf_link()  # переходы
 
     def add_keywords(self, keywords):
         """ Добавляем все подстроки в список подстрок """
@@ -46,7 +46,7 @@ class AhoCorasickTree(object):
             self.add_keyword(keyword)
 
     def find_next_state(self, current_state, value):
-        """Находим переход"""
+        """Находим следующее состояние"""
         for node in self.AhoCorasickList[current_state]["next_states"]:
             if self.AhoCorasickList[node]["value"] == value:
                 return node
@@ -66,42 +66,53 @@ class AhoCorasickTree(object):
                 break
 
         for i in range(index, len(keyword)):
-            node = {'value': keyword[i], 'next_states': [], 'fail_state': 0, 'output': []}
+            node = {'value': keyword[i], 'next_states': [], 'suff_link': 0, 'output': []}
             self.AhoCorasickList.append(node)
             self.AhoCorasickList[current_state]["next_states"].append(len(self.AhoCorasickList) - 1)
             current_state = len(self.AhoCorasickList) - 1
 
         self.AhoCorasickList[current_state]["output"].append(keyword)
 
-    def set_fail_transitions(self):
+    def set_suf_link(self):
+        """Устанавливаем суффиксные ссылки"""
         new_deque = deque()
 
         for node in self.AhoCorasickList[0]["next_states"]:
             new_deque.append(node)
-            self.AhoCorasickList[node]["fail_state"] = 0
+            self.AhoCorasickList[node]["suff_link"] = 0
+
         while new_deque:
-            r = new_deque.popleft()
-            for child in self.AhoCorasickList[r]["next_states"]:
+            tmp = new_deque.popleft()
+
+            for child in self.AhoCorasickList[tmp]["next_states"]:
                 new_deque.append(child)
-                state = self.AhoCorasickList[r]["fail_state"]
+                state = self.AhoCorasickList[tmp]["suff_link"]
+
                 while self.find_next_state(state, self.AhoCorasickList[child]["value"]) is None and state != 0:
-                    state = self.AhoCorasickList[state]["fail_state"]
-                self.AhoCorasickList[child]["fail_state"] = self.find_next_state(state, self.AhoCorasickList[child]["value"])
-                if self.AhoCorasickList[child]["fail_state"] is None:
-                    self.AhoCorasickList[child]["fail_state"] = 0
+                    state = self.AhoCorasickList[state]["suff_link"]
+
+                self.AhoCorasickList[child]["suff_link"] = self.find_next_state(state,
+                                                                                 self.AhoCorasickList[child]["value"])
+
+                if self.AhoCorasickList[child]["suff_link"] is None:
+                    self.AhoCorasickList[child]["suff_link"] = 0
+
                 self.AhoCorasickList[child]["output"] = self.AhoCorasickList[child]["output"] + \
-                                                        self.AhoCorasickList[self.AhoCorasickList[child]["fail_state"]]["output"]
+                                                        self.AhoCorasickList[self.AhoCorasickList[child]["suff_link"]][
+                                                            "output"]
 
     def get_keywords_found(self, line):
-        """ returns true if line contains any keywords in trie, format: (start_idx,kw,value) """
+        """Возвращает индекс, где нашлась подстрока, в формате (индекс начала, значение подстроки)"""
 
         current_state = 0
         keywords_found = []
 
         for i in range(len(line)):
+
             while self.find_next_state(current_state, line[i]) is None and current_state != 0:
-                current_state = self.AhoCorasickList[current_state]["fail_state"]
+                current_state = self.AhoCorasickList[current_state]["suff_link"]
             current_state = self.find_next_state(current_state, line[i])
+
             if current_state is None:
                 current_state = 0
             else:
