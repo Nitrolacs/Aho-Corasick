@@ -27,96 +27,85 @@ def timeit(method):
 
 class AhoCorasickTree(object):
 
-    def __init__(self, keywords, lowercase=False):
-        """ creates a trie of keywords, then sets fail transitions
-        :param keywords: trie of keywords
-        :param lowercase: convert all strings to lower case
-        """
+    def __init__(self, keywords):
         """
         Алгоритм Ахо-Корасика
         :param keywords: дерево бора.
-        :param lowercase
         """
 
-        self.lowercase = lowercase
-
-        # initalize the root of the trie
-        self.AdjList = list()
-        self.AdjList.append({'value': '', 'next_states': [], 'fail_state': 0, 'output': []})
+        # Инициализируем корневой узел
+        self.AhoCorasickList = list()
+        self.AhoCorasickList.append({'value': '', 'next_states': [], 'fail_state': 0, 'output': []})
 
         self.add_keywords(keywords)
-        self.set_fail_transitions()
+        self.set_fail_transitions()  # переходы
 
     def add_keywords(self, keywords):
         """ Добавляем все подстроки в список подстрок """
         for keyword in keywords:
             self.add_keyword(keyword)
 
-    def add_keywords_and_values(self, kvs):
-        """ add all keywords and values in list of (k,v) """
-        for k, v in kvs:
-            self.add_keyword(k)
-
     def find_next_state(self, current_state, value):
-        for node in self.AdjList[current_state]["next_states"]:
-            if self.AdjList[node]["value"] == value:
+        """Находим переход"""
+        for node in self.AhoCorasickList[current_state]["next_states"]:
+            if self.AhoCorasickList[node]["value"] == value:
                 return node
         return None
 
     def add_keyword(self, keyword):
-        """ add a keyword to the trie and mark output at the last node """
+        """Добавляем подстроки в дерево и помечаем терминальные точки"""
         current_state = 0
-        j = 0
-        if self.lowercase: keyword = keyword.lower()
-        child = self.find_next_state(current_state, keyword[j])
-        while child != None:
+        index = 0
+        child = self.find_next_state(current_state, keyword[index])
+        while child is not None:
             current_state = child
-            j = j + 1
-            if j < len(keyword):
-                child = self.find_next_state(current_state, keyword[j])
+            index = index + 1
+            if index < len(keyword):
+                child = self.find_next_state(current_state, keyword[index])
             else:
                 break
-        for i in range(j, len(keyword)):
+
+        for i in range(index, len(keyword)):
             node = {'value': keyword[i], 'next_states': [], 'fail_state': 0, 'output': []}
-            self.AdjList.append(node)
-            self.AdjList[current_state]["next_states"].append(len(self.AdjList) - 1)
-            current_state = len(self.AdjList) - 1
-        self.AdjList[current_state]["output"].append(keyword)
+            self.AhoCorasickList.append(node)
+            self.AhoCorasickList[current_state]["next_states"].append(len(self.AhoCorasickList) - 1)
+            current_state = len(self.AhoCorasickList) - 1
+
+        self.AhoCorasickList[current_state]["output"].append(keyword)
 
     def set_fail_transitions(self):
-        q = deque()
-        child = 0
-        for node in self.AdjList[0]["next_states"]:
-            q.append(node)
-            self.AdjList[node]["fail_state"] = 0
-        while q:
-            r = q.popleft()
-            for child in self.AdjList[r]["next_states"]:
-                q.append(child)
-                state = self.AdjList[r]["fail_state"]
-                while self.find_next_state(state, self.AdjList[child]["value"]) is None and state != 0:
-                    state = self.AdjList[state]["fail_state"]
-                self.AdjList[child]["fail_state"] = self.find_next_state(state, self.AdjList[child]["value"])
-                if self.AdjList[child]["fail_state"] is None:
-                    self.AdjList[child]["fail_state"] = 0
-                self.AdjList[child]["output"] = self.AdjList[child]["output"] + \
-                                                self.AdjList[self.AdjList[child]["fail_state"]]["output"]
+        new_deque = deque()
+
+        for node in self.AhoCorasickList[0]["next_states"]:
+            new_deque.append(node)
+            self.AhoCorasickList[node]["fail_state"] = 0
+        while new_deque:
+            r = new_deque.popleft()
+            for child in self.AhoCorasickList[r]["next_states"]:
+                new_deque.append(child)
+                state = self.AhoCorasickList[r]["fail_state"]
+                while self.find_next_state(state, self.AhoCorasickList[child]["value"]) is None and state != 0:
+                    state = self.AhoCorasickList[state]["fail_state"]
+                self.AhoCorasickList[child]["fail_state"] = self.find_next_state(state, self.AhoCorasickList[child]["value"])
+                if self.AhoCorasickList[child]["fail_state"] is None:
+                    self.AhoCorasickList[child]["fail_state"] = 0
+                self.AhoCorasickList[child]["output"] = self.AhoCorasickList[child]["output"] + \
+                                                        self.AhoCorasickList[self.AhoCorasickList[child]["fail_state"]]["output"]
 
     def get_keywords_found(self, line):
         """ returns true if line contains any keywords in trie, format: (start_idx,kw,value) """
-        if self.lowercase:
-            line = line.lower()
+
         current_state = 0
         keywords_found = []
 
         for i in range(len(line)):
             while self.find_next_state(current_state, line[i]) is None and current_state != 0:
-                current_state = self.AdjList[current_state]["fail_state"]
+                current_state = self.AhoCorasickList[current_state]["fail_state"]
             current_state = self.find_next_state(current_state, line[i])
             if current_state is None:
                 current_state = 0
             else:
-                for k in self.AdjList[current_state]["output"]:
+                for k in self.AhoCorasickList[current_state]["output"]:
                     keywords_found.append((i - len(k) + 1, k))
 
         return keywords_found
