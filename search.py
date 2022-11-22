@@ -1,4 +1,4 @@
-"""Шаблон модуля search"""
+from collections import deque
 
 import time
 
@@ -11,6 +11,8 @@ logging.basicConfig(
 
 
 def timeit(method):
+    """Логирует время работы функции"""
+
     def timed(*args):
         ts = time.perf_counter()
         result = method(*args)
@@ -23,81 +25,101 @@ def timeit(method):
     return timed
 
 
-def char_num(char) -> int:
-    # Возвращает номер символа в латинском алфавите
+class AhoCorasickTree(object):
 
-    if char.lower() != char:
-        return ord(char) - 39
-    return ord(char) - ord('a')
+    def __init__(self, keywords, lowercase=False):
+        """ creates a trie of keywords, then sets fail transitions
+        :param keywords: trie of keywords
+        :param lowercase: convert all strings to lower case
+        """
+        """
+        Алгоритм Ахо-Корасика
+        :param keywords: дерево бора.
+        :param lowercase
+        """
 
+        self.lowercase = lowercase
 
-class Vertex:
-    def __init__(self, id_vertex, alph_size, parent, char_to_parent) -> None:
-        self.id = id_vertex  # id_vertex узла
-        self.son = [None] * alph_size  # Список переходов в рамках бора (список сыновей)
-        self.is_terminal = False  # Флаг того, заканчивается ли строка в этой вершине
-        self.parent = parent  # Родитель узла
-        self.char_to_parent = char_to_parent  # По какому символу мы пришли (символ до родителя)
-        self.suff_link = None  # Храним суффиксную ссылку
-        self.go = [None] * alph_size  # Вычисляемые переходы
+        # initalize the root of the trie
+        self.AdjList = list()
+        self.AdjList.append({'value': '', 'next_states': [], 'fail_state': 0, 'output': []})
 
+        self.add_keywords(keywords)
+        self.set_fail_transitions()
 
-class AhoCorasickTree:
-    def __init__(self, alph_size) -> None:
-        self.alph_size = alph_size  # Размер алфавита данного бора, от алфавита зависит то, сколько переходов
-        self.vertices = [Vertex(0, alph_size, None, None)]  # Список вершин, добавляем в него корень дерева
-        self.root = self.vertices[0]
+    def add_keywords(self, keywords):
+        """ Добавляем все подстроки в список подстрок """
+        for keyword in keywords:
+            self.add_keyword(keyword)
 
-    def size(self) -> int:
-        # Размер нашего бора, сколько в нём вершин
-        return len(self.vertices)
+    def add_keywords_and_values(self, kvs):
+        """ add all keywords and values in list of (k,v) """
+        for k, v in kvs:
+            self.add_keyword(k)
 
-    def last(self) -> Vertex:
-        # Последняя добавленная вершина
-        return self.vertices[-1]
+    def find_next_state(self, current_state, value):
+        for node in self.AdjList[current_state]["next_states"]:
+            if self.AdjList[node]["value"] == value:
+                return node
+        return None
 
-    def add(self, string) -> None:
-        # Функция добавления строки в бор
-        vertex = self.root
-        for index in range(len(string)):
-            char_index = char_num(string[index])
-            if vertex.son[char_index] is None:  # Если перехода нет
-                # Вставляем новую вершину
-                self.vertices.append(Vertex(self.size(), self.alph_size, vertex, string[index]))
-                vertex.son[char_index] = self.last()
-            # Идём по ней
-            vertex = vertex.son[char_index]
-        # Помечаем, что эта вершина конечная
-        vertex.is_terminal = True
-
-    def get_suff_link(self, vertex) -> Vertex:
-        # Получение ссылки
-        # Вычисляет суффиксную ссылку из нашей вершины
-        if vertex.suff_link is None:
-            if vertex == self.root or vertex.parent == self.root:
-                vertex.suff_link = self.root
+    def add_keyword(self, keyword):
+        """ add a keyword to the trie and mark output at the last node """
+        current_state = 0
+        j = 0
+        if self.lowercase: keyword = keyword.lower()
+        child = self.find_next_state(current_state, keyword[j])
+        while child != None:
+            current_state = child
+            j = j + 1
+            if j < len(keyword):
+                child = self.find_next_state(current_state, keyword[j])
             else:
-                vertex.suff_link = self.get_link(self.get_suff_link(vertex.parent), vertex.char_to_parent)
-        return vertex.suff_link
+                break
+        for i in range(j, len(keyword)):
+            node = {'value': keyword[i], 'next_states': [], 'fail_state': 0, 'output': []}
+            self.AdjList.append(node)
+            self.AdjList[current_state]["next_states"].append(len(self.AdjList) - 1)
+            current_state = len(self.AdjList) - 1
+        self.AdjList[current_state]["output"].append(keyword)
 
-    def get_link(self, vertex, char) -> Vertex:
-        # Получение перехода
-        char_index = char_num(char)
-        if vertex.go[char_index] is None:
-            # Если есть переход по ребру бора
-            if vertex.son[char_index]:
-                # Это и есть наш переход
-                vertex.go[char_index] = vertex.son[char_index]
-            # Если перехода по бору нет, и мы находимся в корне
-            elif vertex == self.root:
-                vertex.go[char_index] = self.root
-            # Мы стоим не в корне и хотим перейти из нас
-            # Перейдем по суффиксной ссылке и оттуда попробуем
-            # перейти по нашему символу char
+    def set_fail_transitions(self):
+        q = deque()
+        child = 0
+        for node in self.AdjList[0]["next_states"]:
+            q.append(node)
+            self.AdjList[node]["fail_state"] = 0
+        while q:
+            r = q.popleft()
+            for child in self.AdjList[r]["next_states"]:
+                q.append(child)
+                state = self.AdjList[r]["fail_state"]
+                while self.find_next_state(state, self.AdjList[child]["value"]) is None and state != 0:
+                    state = self.AdjList[state]["fail_state"]
+                self.AdjList[child]["fail_state"] = self.find_next_state(state, self.AdjList[child]["value"])
+                if self.AdjList[child]["fail_state"] is None:
+                    self.AdjList[child]["fail_state"] = 0
+                self.AdjList[child]["output"] = self.AdjList[child]["output"] + \
+                                                self.AdjList[self.AdjList[child]["fail_state"]]["output"]
+
+    def get_keywords_found(self, line):
+        """ returns true if line contains any keywords in trie, format: (start_idx,kw,value) """
+        if self.lowercase:
+            line = line.lower()
+        current_state = 0
+        keywords_found = []
+
+        for i in range(len(line)):
+            while self.find_next_state(current_state, line[i]) is None and current_state != 0:
+                current_state = self.AdjList[current_state]["fail_state"]
+            current_state = self.find_next_state(current_state, line[i])
+            if current_state is None:
+                current_state = 0
             else:
-                vertex.go[char_index] = self.get_link(self.get_suff_link(vertex), char)
+                for k in self.AdjList[current_state]["output"]:
+                    keywords_found.append((i - len(k) + 1, k))
 
-        return vertex.go[char_index]
+        return keywords_found
 
 
 @timeit
@@ -112,73 +134,56 @@ def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method
         else:
             sub_string = sub_string.lower()
 
-    alphabet_size = 52
-    trie = AhoCorasickTree(alphabet_size)
+    if isinstance(sub_string, str):
+        sub_string_new = tuple([sub_string])
+        trie = AhoCorasickTree(sub_string_new)
+    else:
+        trie = AhoCorasickTree(sub_string)
+
+    result = trie.get_keywords_found(string)
 
     if isinstance(sub_string, tuple):
+        counter = 0
+
+        if method == "last":
+            result = result[::-1]
+
+        information = dict()
         for word in sub_string:
-            trie.add(word)
-    else:
-        trie.add(sub_string)
+            information[word] = []
 
-    vertex = trie.root
+        for pair in result:
+            counter += 1
+            if counter <= count:
+                information[pair[1]].append(pair[0])
 
-    if isinstance(sub_string, tuple):
-        result = dict()
-        for word in sub_string:
-            result[word] = None
-    else:
-        result = []
-
-    find_word = ""
-
-    for index in range(len(string)):
-        if string[index] == " ":
-            find_word = ""
-            continue
-
-        vertex = trie.get_link(vertex, string[index])
-
-        find_word += str(vertex.char_to_parent)
-
-        if vertex.is_terminal:
-
-            if isinstance(sub_string, tuple):
-                if not result[find_word]:
-                    result[find_word] = []
-                result[find_word].append(index + 1 - len(find_word))
+        for key, item in information.items():
+            if item:
+                information[key] = tuple(item)
             else:
-                result.append(index + 1 - len(sub_string))
+                information[key] = None
+    else:
+        information = []
 
-            find_word = ""
+        for item in result:
+            information.append(item[0])
 
-            if method == 'first' and len(result) == count:
-                break
+        if method == "last":
+            information = list(information[::-1])[:count]
+        elif method == "first":
+            information = list(information[:count])
 
-    if method == 'last':
-        if isinstance(result, dict):
-            pass
-        else:
-            result = list(result[::-1])[:count]
+        if information:
+            information = tuple(information)
 
-    if len(result) == 0:
-        return None
-    if isinstance(result, dict):
+    if len(information) == 0:
+        information = None
+    elif isinstance(information, dict):
         is_value = False
-        for _, value in result.items():
+        for _, value in information.items():
             if value is not None:
                 is_value = True
         if not is_value:
-            return None
+            information = None
 
-    if isinstance(result, dict):
-        for key, item in result.items():
-            if item:
-                result[key] = tuple(item)
-        return result
-    else:
-        return tuple(result)
-
-
-#  ('ababbababa', ('aba', 'bba'), False, 'first', 4, {'aba': (0, 5, 7), 'bba': (3,)}),
-print(search('ababbaaba', ('aba', 'bba'), False, 'first', 4))
+    return information
