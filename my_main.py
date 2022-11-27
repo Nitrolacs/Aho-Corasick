@@ -1,6 +1,6 @@
 import os
 import argparse
-import sys
+import pprint
 
 import search
 import random
@@ -28,8 +28,19 @@ def reading_file(file_name: str = "") -> Union[str, bool]:
     if file_strings and file_strings != " " * len(file_strings):
         string = ''.join(file_strings.split("\n"))
 
+    result = pprint.pformat(string)
+
     print("Считано из файла: ")
-    print(string)
+
+    flag = False
+    for line in result.splitlines()[:10]:
+        if line[0] == "(":
+            flag = True
+
+        if flag:
+            print(line[2:-1])
+        else:
+            print(line[1:-1])
 
     return string
 
