@@ -1,5 +1,7 @@
 import os
 import argparse
+import sys
+
 import search
 import random
 import re
@@ -166,15 +168,16 @@ def parse_args() -> Union[bool, str]:
 
     parser.add_argument("-f", "--file", type=str, dest="file", help="Путь до файла")
     parser.add_argument("-s", "--string", type=str, dest="string", help="Исходная строка")
-    parser.add_argument("-ss", "--sub_string", type=str, dest="sub_string",
+    parser.add_argument("-ss", "--sub_string", nargs="+", type=str, dest="sub_string",
                         help="Одна или несколько подстрок, которые необходимо найти")
-    parser.add_argument("-cs", "--case_sensitivity", type=bool, dest="case_sensitivity",
-                        help="Чувствительность к регистру", default=True)
-    parser.add_argument("-m", "--method", type=str, dest="method", help="Метод поиска")
-    parser.add_argument("-c", "--count", type=int, dest="count", help="Количество совпадений, которое нужно найти")
+    parser.add_argument("-cs", "--case_sensitivity", dest="case_sensitivity",
+                        help="Чувствительность к регистру", action="store_true")
+    parser.add_argument("-m", "--method", type=str, dest="method", help="Метод поиска", default="first")
+    parser.add_argument("-c", "--count", type=int, dest="count", help="Количество совпадений, которое нужно найти",
+                        default=-1)
     args = parser.parse_args()  # В эту переменную попадает результат разбора аргументов командной строки.
 
-    if_args = bool(args.file) + bool(args.string) + bool(args.sub_string) + bool(args.method) + bool(args.count)
+    if_args = bool(args.file) + bool(args.string) + bool(args.sub_string)
 
     if not if_args:
         # Если параметры командной строки не переданы
@@ -188,11 +191,6 @@ def parse_args() -> Union[bool, str]:
     if not args.sub_string:
         print("Укажите подстроки, которые необходимо искать.")
         return False
-
-    if not args.method:
-        print("Укажите метод поиска.")
-        return False
-
     if not args.count:
         print("Укажите количество совпадений, которое нужно найти.")
         return False
@@ -207,7 +205,7 @@ def parse_args() -> Union[bool, str]:
         if not string:
             return False
 
-    sub_strings = args.sub_string.replace(" ", "").split(",")
+    sub_strings = args.sub_string
 
     case_sensitivity = None
 
@@ -219,7 +217,7 @@ def parse_args() -> Union[bool, str]:
     if args.method in ("first", "last"):
         method = args.method
 
-    count = 0
+    count = len(string)
 
     if args.count > 0:
         count = args.count

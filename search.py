@@ -3,6 +3,7 @@ from collections import deque
 import time
 
 import logging
+from typing import Union
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -27,7 +28,7 @@ def timeit(method):
 
 class AhoCorasickTree(object):
 
-    def __init__(self, keywords):
+    def __init__(self, keywords: tuple) -> None:
         """
         Алгоритм Ахо-Корасика
         :param keywords: дерево бора.
@@ -37,22 +38,22 @@ class AhoCorasickTree(object):
         self.AhoCorasickList = list()
         self.AhoCorasickList.append({'value': '', 'next_states': [], 'suff_link': 0, 'output': []})
 
-        self.add_keywords(keywords)
+        self.add_keywords(keywords)  # Добавляем все подстроки
         self.set_suf_link()  # переходы
 
-    def add_keywords(self, keywords):
+    def add_keywords(self, keywords: tuple) -> None:
         """ Добавляем все подстроки в список подстрок """
         for keyword in keywords:
             self.add_keyword(keyword)
 
-    def find_next_state(self, current_state, value):
+    def find_next_state(self, current_state, value) -> Union["node", None]:
         """Находим следующее состояние"""
         for node in self.AhoCorasickList[current_state]["next_states"]:
             if self.AhoCorasickList[node]["value"] == value:
                 return node
         return None
 
-    def add_keyword(self, keyword):
+    def add_keyword(self, keyword: str) -> None:
         """Добавляем подстроки в дерево и помечаем терминальные точки"""
         current_state = 0
         index = 0
@@ -73,7 +74,7 @@ class AhoCorasickTree(object):
 
         self.AhoCorasickList[current_state]["output"].append(keyword)
 
-    def set_suf_link(self):
+    def set_suf_link(self) -> None:
         """Устанавливаем суффиксные ссылки"""
         new_deque = deque()
 
@@ -92,7 +93,7 @@ class AhoCorasickTree(object):
                     state = self.AhoCorasickList[state]["suff_link"]
 
                 self.AhoCorasickList[child]["suff_link"] = self.find_next_state(state,
-                                                                                 self.AhoCorasickList[child]["value"])
+                                                                                self.AhoCorasickList[child]["value"])
 
                 if self.AhoCorasickList[child]["suff_link"] is None:
                     self.AhoCorasickList[child]["suff_link"] = 0
