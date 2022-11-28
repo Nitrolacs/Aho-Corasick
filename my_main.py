@@ -4,6 +4,7 @@ import pprint
 
 import search
 import random
+import re
 
 from colorama import init
 from typing import Union
@@ -27,19 +28,11 @@ def reading_file(file_name: str = "") -> Union[str, bool]:
     if file_strings and file_strings != " " * len(file_strings):
         string = ''.join(file_strings.split("\n"))
 
-    result = pprint.pformat(string)
-
     print("Считано из файла: ")
 
-    flag = False
-    for line in result.splitlines()[:10]:
-        if line[0] == "(":
-            flag = True
+    for string in re.findall('.{%s}' % 100, string)[:10]:
+        print(string)
 
-        if flag:
-            print(line[2:-1])
-        else:
-            print(line[1:-1])
     string = file_strings.replace('\n', '\\n')
 
     return string
@@ -97,7 +90,10 @@ def colored_print_tuple(string: str, all_sub_strings: Union[str, list[str]], res
         output_string += letter[1]
 
     print("Найденные подстроки:")
-    print(output_string)
+
+    for string in re.findall('.{%s}' % 100, output_string)[:10]:
+        print(string)
+
     print("Набор индексов начала каждой подстроки:")
     print(f"\033[{color}m{result}\033[0m")
 
@@ -110,11 +106,6 @@ def colored_print_dict(string: str, result: Union[None, dict]) -> None:
         return None
 
     for key in result:  # Получаем ключи словаря
-
-        count_row += 1
-
-        if count_row > 10:  # Ограничение на количество выводимого текста
-            break
 
         output_string = ""
         color = random.randint(31, 36)  # Берём все цвета, кроме чёрного и белого
@@ -138,14 +129,18 @@ def colored_print_dict(string: str, result: Union[None, dict]) -> None:
                 output_string += letter[1]
 
             print("Найденные подстроки:")
-            print(output_string)
+
+            for line in re.findall('.{%s}' % 100, output_string)[:10]:
+                print(line)
+
             print("Набор индексов начала каждой подстроки:")
             print(f"\033[{color}m{key}: {result[key]}\033[0m")
 
         else:
             print("Найденные подстроки:")
-            print(string)
-            print("Найденные подстроки:")
+            for line in re.findall('.{%s}' % 100, string)[:10]:
+                print(line)
+            print("Набор индексов начала каждой подстроки:")
             print(f"\033[{color}m{key}: {result[key]}\033[0m")
 
 
