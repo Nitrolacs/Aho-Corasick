@@ -4,7 +4,6 @@ import pprint
 
 import search
 import random
-import re
 
 from colorama import init
 from typing import Union
@@ -41,6 +40,7 @@ def reading_file(file_name: str = "") -> Union[str, bool]:
             print(line[2:-1])
         else:
             print(line[1:-1])
+    string = file_strings.replace('\n', '\\n')
 
     return string
 
@@ -102,9 +102,12 @@ def colored_print_tuple(string: str, all_sub_strings: Union[str, list[str]], res
     print(f"\033[{color}m{result}\033[0m")
 
 
-def colored_print_dict(string: str, result: Union[None, tuple, dict]) -> None:
+def colored_print_dict(string: str, result: Union[None, dict]) -> None:
     """Печать нескольких подстрок"""
     count_row = 0  # Количество строк, которое выводится
+
+    if not result:
+        return None
 
     for key in result:  # Получаем ключи словаря
 
@@ -202,9 +205,6 @@ def parse_args() -> Union[bool, str]:
     if not args.sub_string:
         print("Укажите подстроки, которые необходимо искать.")
         return False
-    if not args.count:
-        print("Укажите количество совпадений, которое нужно найти.")
-        return False
 
     string = ""
 
@@ -218,10 +218,7 @@ def parse_args() -> Union[bool, str]:
 
     sub_strings = args.sub_string
 
-    case_sensitivity = None
-
-    if args.case_sensitivity is bool:
-        case_sensitivity = args.case_sensitivity
+    case_sensitivity = args.case_sensitivity
 
     method = None
 
@@ -243,7 +240,7 @@ def parameters_output(string: str, sub_strings: Union[str, list[str]],
     print(f"Строка: {string};")
     print("Подстроки:")
     for sub_string in enumerate(sub_strings):
-        print(f"{sub_string[1]};")
+        print(f"{sub_string[1]}")
     print(f"Чувствительность к регистру: {case_sensitivity};")
     print(f"Количество вхождений подстроки в строку, которое нужно найти: {count};")
     print(f"Метод поиска: {method};")
@@ -258,7 +255,7 @@ def get_string_menu() -> None:
 def get_string() -> str:
     """Получение строки"""
     string = ""
-    pattern = re.compile("^[a-zA-Z]+$")
+
     get_string_menu()
 
     choice = input("Введите желаемый номер команды: ")
@@ -268,7 +265,7 @@ def get_string() -> str:
             string = input("Введите строку, в которой будет производиться поиск подстрок: ")
             is_valid = False
             while not is_valid:
-                if not string.strip(" ") or not pattern.match(string):
+                if not string.strip(" "):
                     print("Введите нормальную строку.")
                     string = input("Введите строку, в которой будет производиться поиск подстрок: ")
                 else:
@@ -276,9 +273,7 @@ def get_string() -> str:
 
         elif choice == "2":
             result = reading_file(string)
-            while not pattern.match(result):
-                print("Недопустимый ввод. Попробуйте снова.")
-                result = reading_file(string)
+
             if result:
                 string = result
 
@@ -291,13 +286,12 @@ def get_string() -> str:
 
 def get_sub_string() -> Union[str, list[str]]:
     """Получение подстроки"""
-    pattern = re.compile("^[a-zA-Z]+$")
+
     sub_strings = []
     sub_string_entered = input("Введите строки, которые нужно искать в строке (нажмите Enter для остановки): ")
     while sub_string_entered != "" or not sub_strings:
         if sub_string_entered != "":
-            if sub_string_entered and sub_string_entered != " " * len(sub_string_entered) and pattern.match(
-                    sub_string_entered):
+            if sub_string_entered and sub_string_entered != " " * len(sub_string_entered):
                 sub_strings.append(sub_string_entered.strip(" "))
             else:
                 print("Недопустимый ввод. Попробуйте снова.")
