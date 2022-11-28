@@ -28,7 +28,7 @@ def timeit(method):
 
 class AhoCorasickTree(object):
 
-    def __init__(self, keywords: tuple) -> None:
+    def __init__(self, keywords: list) -> None:
         """
         Алгоритм Ахо-Корасика
         :param keywords: дерево бора.
@@ -41,7 +41,7 @@ class AhoCorasickTree(object):
         self.add_keywords(keywords)  # Добавляем все подстроки
         self.set_suf_link()  # переходы
 
-    def add_keywords(self, keywords: tuple) -> None:
+    def add_keywords(self, keywords: list) -> None:
         """ Добавляем все подстроки в список подстрок """
         for keyword in keywords:
             self.add_keyword(keyword)
@@ -136,10 +136,10 @@ def search(string: str, sub_string: str or tuple, case_sensitivity: bool, method
             sub_string = sub_string.lower()
 
     if isinstance(sub_string, str):
-        sub_string_new = tuple([sub_string])
+        sub_string_new = [sub_string]
         trie = AhoCorasickTree(sub_string_new)
     else:
-        trie = AhoCorasickTree(sub_string)
+        trie = AhoCorasickTree(list(sub_string))
 
     result = trie.get_keywords_found(string)
 
