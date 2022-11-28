@@ -1,10 +1,9 @@
 import os
 import argparse
-import pprint
 
 import search
 import random
-import re
+import textwrap
 
 from colorama import init
 from typing import Union
@@ -30,8 +29,8 @@ def reading_file(file_name: str = "") -> Union[str, bool]:
 
     print("Считано из файла: ")
 
-    for string in re.findall('.{%s}' % 100, string)[:10]:
-        print(string)
+    for line in textwrap.wrap(string, width=120)[:10]:
+        print(line)
 
     string = file_strings.replace('\n', '\\n')
 
@@ -91,8 +90,8 @@ def colored_print_tuple(string: str, all_sub_strings: Union[str, list[str]], res
 
     print("Найденные подстроки:")
 
-    for string in re.findall('.{%s}' % 100, output_string)[:10]:
-        print(string)
+    for line in textwrap.wrap(output_string, width=120)[:10]:
+        print(line)
 
     print("Набор индексов начала каждой подстроки:")
     print(f"\033[{color}m{result}\033[0m")
@@ -130,7 +129,7 @@ def colored_print_dict(string: str, result: Union[None, dict]) -> None:
 
             print("Найденные подстроки:")
 
-            for line in re.findall('.{%s}' % 100, output_string)[:10]:
+            for line in textwrap.wrap(output_string, width=120)[:10]:
                 print(line)
 
             print("Набор индексов начала каждой подстроки:")
@@ -138,7 +137,7 @@ def colored_print_dict(string: str, result: Union[None, dict]) -> None:
 
         else:
             print("Найденные подстроки:")
-            for line in re.findall('.{%s}' % 100, string)[:10]:
+            for line in textwrap.wrap(string, width=120)[:10]:
                 print(line)
             print("Набор индексов начала каждой подстроки:")
             print(f"\033[{color}m{key}: {result[key]}\033[0m")
